@@ -1,12 +1,12 @@
-import pygame
+import pygame, random
 
-#иннициализируем pygame
+#install pygame
 pygame.init()
 
-#создаем экран
+#create screen
 screen = pygame.display.set_mode((800, 600))
 
-#название окна и иконка
+#title window and icon
 pygame.display.set_caption('Space invaders')
 icon = pygame.image.load('assets/ufo.png')
 pygame.display.set_icon(icon)
@@ -19,14 +19,18 @@ playerX_change = 0
 
 #enemy
 enemyImg = pygame.image.load('assets/enemy.png')
-enemyX = 370
-enemyY = 120
-enemyX_change = 0
+enemyX = random.randint(0, 800)
+enemyY = random.randint(50, 150)
+enemyX_change = 0.2
 enemyY_change = 0
 
 def player():
     screen.blit(playerImg, (playerX, playerY))
 
+def enemy():
+    screen.blit(enemyImg, (enemyX, enemyY))
+
+#game cycle
 running = True
 while running:
     screen.fill((0, 0, 0))
@@ -41,6 +45,24 @@ while running:
             if event.key == pygame.K_RIGHT:
                 playerX_change = 0.2
 
+    #player cycle
     playerX += playerX_change
     player()
+
+    #enemy cycle
+    enemy()
+    enemyX += enemyX_change
+
+    #game border for player
+    if playerX > 736:
+        playerX = 736
+    if playerX < 0:
+        playerX = 0
+
+    #game border for enemy
+    if enemyX > 736:
+        enemyX = 736
+    if enemyX < 0:
+        enemyX = 0
+
     pygame.display.update()
