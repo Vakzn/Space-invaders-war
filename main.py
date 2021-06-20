@@ -15,17 +15,32 @@ pygame.display.set_icon(icon)
 playerImg = pygame.image.load('assets/player.png')
 playerX = 370
 playerY = 480
+playerX_change = 0
+
+#enemy
+enemyImg = pygame.image.load('assets/enemy.png')
+enemyX = 370
+enemyY = 120
+enemyX_change = 0
+enemyY_change = 0
 
 def player():
     screen.blit(playerImg, (playerX, playerY))
 
 running = True
 while running:
+    screen.fill((0, 0, 0))
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-    #цвета в pygame работают в pgb
-    screen.fill((0, 0, 0))
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                playerX_change = -0.2
+            if event.key == pygame.K_RIGHT:
+                playerX_change = 0.2
+
+    playerX += playerX_change
     player()
     pygame.display.update()
