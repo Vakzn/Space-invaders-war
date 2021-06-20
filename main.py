@@ -11,6 +11,9 @@ pygame.display.set_caption('Space invaders')
 icon = pygame.image.load('assets/ufo.png')
 pygame.display.set_icon(icon)
 
+#set background
+bg = pygame.image.load('assets/background.png')
+
 #player
 playerImg = pygame.image.load('assets/player.png')
 playerX = 370
@@ -22,13 +25,25 @@ enemyImg = pygame.image.load('assets/enemy.png')
 enemyX = random.randint(0, 800)
 enemyY = random.randint(50, 150)
 enemyX_change = 0.2
-enemyY_change = 0
+enemyY_change = 0.1
+
+#bullet
+bulletImg = pygame.image.load('assets/bullet.png')
+bulletX = playerX
+bulletY = 480
+bulletX_change = 0
+bulletY_change = -0.2
+bullet_state = 'ready'
 
 def player():
     screen.blit(playerImg, (playerX, playerY))
 
 def enemy():
     screen.blit(enemyImg, (enemyX, enemyY))
+
+def fire_bullet():
+    if bullet_state == 'fire':
+        screen.blit(bulletImg, (bulletX, bulletY))
 
 #game cycle
 running = True
@@ -44,6 +59,8 @@ while running:
                 playerX_change = -0.2
             if event.key == pygame.K_RIGHT:
                 playerX_change = 0.2
+            if event.key == pygame.K_SPACE and bullet_state == 'ready':
+                bullet_state = 'fire'
 
     #player cycle
     playerX += playerX_change
@@ -52,6 +69,12 @@ while running:
     #enemy cycle
     enemy()
     enemyX += enemyX_change
+    enemyY += enemyY_change
+
+    #bullet cycle
+    bulletY += bulletY_change
+    fire_bullet()
+
 
     #game border for player
     if playerX > 736:
