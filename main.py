@@ -24,31 +24,33 @@ playerX_change = 0
 enemyImg = pygame.image.load('assets/enemy.png')
 enemyX = random.randint(0, 800)
 enemyY = random.randint(50, 150)
-enemyX_change = 0.2
-enemyY_change = 0.1
+enemyX_change = 5
+enemyY_change = 1
 
 #bullet
 bulletImg = pygame.image.load('assets/bullet.png')
-bulletX = playerX
+bulletX = 0
 bulletY = 480
 bulletX_change = 0
-bulletY_change = -0.2
+bulletY_change = 10
 bullet_state = 'ready'
 
-def player():
+def player(x, y):
     screen.blit(playerImg, (playerX, playerY))
 
-def enemy():
+def enemy(x, y):
     screen.blit(enemyImg, (enemyX, enemyY))
 
-def fire_bullet():
-    if bullet_state == 'fire':
-        screen.blit(bulletImg, (bulletX, bulletY))
+def fire_bullet(x, y):
+    global bullet_state
+    bullet_state = 'fire'
+    screen.blit(bulletImg, (x + 16, y + 10))
 
 #game cycle
 running = True
 while running:
     screen.fill((0, 0, 0))
+    screen.blit(bg, (0, 0))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -56,36 +58,35 @@ while running:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                playerX_change = -0.2
+                playerX_change = -5
             if event.key == pygame.K_RIGHT:
-                playerX_change = 0.2
-            if event.key == pygame.K_SPACE and bullet_state == 'ready':
-                bullet_state = 'fire'
+                playerX_change = 5
+            if event.key == pygame.K_SPACE:
+                fire_bullet(bulletX, bulletY)
 
     #player cycle
     playerX += playerX_change
-    player()
-
-    #enemy cycle
-    enemy()
-    enemyX += enemyX_change
-    enemyY += enemyY_change
-
-    #bullet cycle
-    bulletY += bulletY_change
-    fire_bullet()
-
-
-    #game border for player
+    # game border for player
     if playerX > 736:
         playerX = 736
-    if playerX < 0:
+    elif playerX < 0:
         playerX = 0
 
+    #enemy cycle
+    enemyX += enemyX_change
+    enemyY += enemyY_change
     #game border for enemy
-    if enemyX > 736:
-        enemyX = 736
-    if enemyX < 0:
-        enemyX = 0
+    if enemyX <= 0:
+        enemyX_change = 0.5
+    if enemyX >= 736:
+        enemyX_change = -0.5
 
+    #bullet cycle
+    if bullet_state == 'fire':
+        fire_bullet(playerX, bulletY)
+        bulletY -= bulletY_change
+
+    enemy(enemyX, enemyY)
+    player(playerX, playerY)
+    fire_bullet(playerX, bulletY)
     pygame.display.update()
