@@ -1,4 +1,5 @@
 import pygame, random, math
+from pygame import mixer
 
 #install pygame
 pygame.init()
@@ -13,6 +14,11 @@ pygame.display.set_icon(icon)
 
 #set background
 bg = pygame.image.load('assets/background.png')
+
+#fone music
+mixer.music.load('assets/background.wav')
+mixer.music.set_volume(0.1)
+mixer.music.play(-1)
 
 #player
 playerImg = pygame.image.load('assets/player.png')
@@ -47,6 +53,13 @@ score_value = 0
 font = pygame.font.Font('freesansbold.ttf', 32)
 textX = 10
 textY = 10
+
+#game over
+overfont = pygame.font.Font('freesansbold.ttf', 64)
+
+def game_over_text(x, y):
+    over_text = font.render('GAME OVER', True, (255, 255, 255))
+    screen.blit(over_text, (200, 250))
 
 def show_Score(x, y):
     score = font.render('Score : '+ str(score_value), True, (255, 255, 255))
@@ -87,10 +100,11 @@ while running:
                 playerX_change = 10
             if event.key == pygame.K_SPACE:
                 if bullet_state == 'ready':
+                    bullet_sound = mixer.Sound('assets/laser.wav')
+                    bullet_sound.set_volume(0.08)
+                    bullet_sound.play()
                     bulletX = playerX
                     fire_bullet(playerX, bulletY)
-        if event.type == pygame.KEYUP:
-            playerX_change = 0
 
     #player cycle
     playerX += playerX_change
@@ -102,6 +116,12 @@ while running:
 
     #enemy cycle
     for i in range(num_of_enemies):
+        if enemyY[i] > 440:
+            enemyX = 963
+            enemyY = 800
+            game_over_text(200, 250)
+            break
+
         enemyX[i] += enemyX_change[i]
         if enemyX[i] <= 0:
             enemyX_change[i] = 8
@@ -112,10 +132,12 @@ while running:
 
     collision = isCollision(enemyX[i], enemyY[i], bulletX, bulletY)
     if collision:
+        explosion_sound = mixer.Sound('assets/explosion.wav')
+        explosion_sound.set_volume(0.1)
+        explosion_sound.play()
         bulletY = 480
         bullet_state = 'ready'
         score_value += 1
-        print(score_value)
         enemyX[i] = random.randint(0, 735)
         enemyY[i] = random.randint(50, 150)
     enemy(enemyX[i], enemyY[i], i)
